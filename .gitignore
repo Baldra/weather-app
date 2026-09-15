@@ -13,6 +13,13 @@ dist-ssr
 *.local
 .env
 
+# AI agent tooling
+/AGENTS.md
+/.agents/
+/.opencode/
+/openspec/
+/skills-lock.json
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
