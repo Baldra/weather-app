@@ -7,16 +7,21 @@ type TemperatureUnitToggleProps = {
 
 export function TemperatureUnitToggle({ value, onChange }: TemperatureUnitToggleProps) {
   return (
-    <div className="inline-flex rounded-full bg-slate-100 p-1 shadow-inner">
+    <div
+      role="group"
+      aria-label="Temperature unit"
+      className="inline-flex shrink-0 rounded-full border border-haze bg-sky p-1"
+    >
       {(['metric', 'imperial'] as const).map((unit) => (
         <button
           key={unit}
           type="button"
           onClick={() => onChange(unit)}
-          className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+          aria-pressed={value === unit}
+          className={`rounded-full px-3.5 py-1.5 text-sm font-semibold transition-colors ${
             value === unit
-              ? 'bg-white text-slate-900 shadow-sm'
-              : 'text-slate-600 hover:text-slate-900'
+              ? 'bg-paper text-ink shadow-sm'
+              : 'text-fog hover:text-ink'
           }`}
         >
           {unit === 'metric' ? '°C' : '°F'}

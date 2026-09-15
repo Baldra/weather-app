@@ -1,7 +1,7 @@
 export function LoadingSpinner() {
   return (
-    <div className="flex items-center justify-center py-8" aria-live="polite">
-      <div className="h-12 w-12 animate-spin rounded-full border-4 border-sky-200 border-t-sky-600" />
+    <div className="flex justify-center py-16" role="status" aria-label="Loading weather">
+      <div className="h-10 w-10 animate-spin rounded-full border-[3px] border-haze border-t-sea" />
     </div>
   )
 }

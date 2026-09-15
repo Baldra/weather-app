@@ -1,1 +1,63 @@
 @import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-sans: "Instrument Sans", ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  --color-ink: #263744;
+  --color-soft: #47626f;
+  --color-fog: #7e94a1;
+  --color-sky: #eaf1f7;
+  --color-haze: #d7e2ec;
+  --color-paper: #ffffff;
+  --color-sea: #166e78;
+  --color-sea-deep: #0e5a64;
+  --color-sun: #dfa03b;
+}
+
+@layer base {
+  html {
+    color-scheme: light;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    @apply bg-sky font-sans text-ink antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-sea);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--color-sea);
+    color: #fff;
+  }
+}
+
+@layer utilities {
+  .weather-rise {
+    animation: weather-rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes weather-rise {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -44,16 +44,21 @@ export function SearchBar({
   const isLocationMode = searchMode === 'location'
 
   return (
-    <form onSubmit={onSubmit} className="flex w-full flex-col gap-4">
-      <div className="flex w-full flex-col gap-3 sm:flex-row">
-        <div className="flex shrink-0 self-start overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+    <form onSubmit={onSubmit} className="flex w-full flex-col gap-3">
+      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-stretch">
+        <div
+          role="group"
+          aria-label="Search by"
+          className="flex w-full items-stretch rounded-xl border border-haze bg-sky p-1 sm:w-auto sm:shrink-0"
+        >
           <button
             type="button"
             onClick={() => onModeChange('zipcode')}
-            className={`px-4 py-2.5 text-sm font-medium transition ${
+            aria-pressed={searchMode === 'zipcode'}
+            className={`flex flex-1 items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors sm:py-0 sm:self-stretch ${
               searchMode === 'zipcode'
-                ? 'bg-sky-600 text-white'
-                : 'text-slate-600 hover:bg-slate-50'
+                ? 'bg-paper text-ink shadow-sm'
+                : 'text-soft hover:text-ink'
             }`}
           >
             ZIP code
@@ -61,10 +66,11 @@ export function SearchBar({
           <button
             type="button"
             onClick={() => onModeChange('location')}
-            className={`px-4 py-2.5 text-sm font-medium transition ${
+            aria-pressed={searchMode === 'location'}
+            className={`flex flex-1 items-center justify-center rounded-lg px-4 py-2 text-sm font-medium transition-colors sm:py-0 sm:self-stretch ${
               searchMode === 'location'
-                ? 'bg-sky-600 text-white'
-                : 'text-slate-600 hover:bg-slate-50'
+                ? 'bg-paper text-ink shadow-sm'
+                : 'text-soft hover:text-ink'
             }`}
           >
             Location
@@ -84,19 +90,18 @@ export function SearchBar({
             value={query}
             onChange={(event) => onQueryChange(event.target.value)}
             placeholder="Enter city or ZIP code"
-            className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100"
+            className="min-w-0 w-full rounded-xl border border-haze bg-paper px-4 py-3 text-base text-ink placeholder:text-fog sm:flex-1"
           />
         ) : null}
 
         {searchMode === 'location' ? (
           <div className="flex w-full flex-col gap-3 sm:flex-row">
-            <ViewModeLabel label="Country" htmlFor="country" />
             <select
               id="country"
               value={selectedCountryCode}
               onChange={(event) => onCountryChange(event.target.value)}
               disabled={countries.length === 0}
-              className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400 sm:w-[45%]"
+              className="w-full rounded-xl border border-haze bg-paper px-4 py-3 text-base text-ink disabled:cursor-not-allowed disabled:bg-sky disabled:text-fog sm:w-[45%]"
             >
               <option value="">
                 {countries.length === 0 ? 'Loading countries…' : 'Select a country'}
@@ -122,10 +127,10 @@ export function SearchBar({
                   selectedCountryCode ? 'Start typing a city name…' : 'Select a country first'
                 }
                 autoComplete="off"
-                className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base text-slate-900 shadow-sm outline-none transition focus:border-sky-500 focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                className="w-full rounded-xl border border-haze bg-paper px-4 py-3 text-base text-ink placeholder:text-fog disabled:cursor-not-allowed disabled:bg-sky disabled:text-fog"
               />
               {citySuggestions.length > 0 ? (
-                <ul className="absolute z-10 mt-2 max-h-72 w-full overflow-auto rounded-xl border border-slate-200 bg-white py-1 shadow-lg">
+                <ul className="absolute z-10 mt-2 max-h-72 w-full overflow-auto rounded-xl border border-haze bg-paper py-1 shadow-md">
                   {citySuggestions.map((place) => {
                     const key = `${place.name}-${place.country}-${place.lat}-${place.lon}`
                     return (
@@ -133,10 +138,10 @@ export function SearchBar({
                         <button
                           type="button"
                           onClick={() => onSelectCity(place)}
-                          className="w-full px-4 py-2.5 text-left text-sm text-slate-700 transition hover:bg-sky-50"
+                          className="w-full px-4 py-2.5 text-left text-sm text-soft transition-colors hover:bg-sky"
                         >
-                          <span className="font-medium text-slate-900">{place.name}</span>
-                          <span className="ml-2 text-slate-500">
+                          <span className="font-medium text-ink">{place.name}</span>
+                          <span className="ml-2 text-fog">
                             {[place.state, place.country].filter(Boolean).join(', ')}
                           </span>
                         </button>
@@ -146,47 +151,51 @@ export function SearchBar({
                 </ul>
               ) : null}
               {isSearchingCities ? (
-                <p className="mt-1 text-xs text-slate-500">Searching cities…</p>
+                <p className="mt-1 text-xs text-fog">Searching cities…</p>
               ) : null}
             </div>
           </div>
         ) : null}
       </div>
 
-      {countriesError ? <p className="text-sm text-red-600">{countriesError}</p> : null}
+      {countriesError ? <p className="text-sm text-red-700">{countriesError}</p> : null}
 
-      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
-        <div className="flex w-full flex-col gap-3 sm:flex-row">
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="rounded-xl bg-sky-600 px-5 py-3 font-medium text-white shadow-sm transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:bg-sky-300 sm:w-auto"
-          >
-            {isLoading ? 'Searching...' : 'Search'}
-          </button>
-          <button
-            type="button"
-            onClick={onUseMyLocation}
-            disabled={isLoading}
-            className="rounded-xl border border-slate-300 bg-white px-5 py-3 font-medium text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:text-slate-400"
-          >
-            📍 Use my location
-          </button>
-        </div>
+      <div className="flex w-full flex-col gap-3 sm:flex-row">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="rounded-xl bg-sea px-5 py-3 font-semibold text-white transition-colors hover:bg-sea-deep disabled:cursor-not-allowed disabled:opacity-60 sm:px-6 sm:w-auto"
+        >
+          {isLoading ? 'Searching…' : 'Search'}
+        </button>
+        <button
+          type="button"
+          onClick={onUseMyLocation}
+          disabled={isLoading}
+          className="inline-flex items-center justify-center gap-2 rounded-xl border border-haze bg-paper px-5 py-3 font-medium text-soft transition-colors hover:text-ink disabled:cursor-not-allowed disabled:opacity-60 sm:px-6"
+        >
+          <LocationPin />
+          Use my location
+        </button>
       </div>
     </form>
   )
 }
 
-type ViewModeLabelProps = {
-  label: string
-  htmlFor: string
-}
-
-function ViewModeLabel({ label, htmlFor }: ViewModeLabelProps) {
+function LocationPin() {
   return (
-    <label htmlFor={htmlFor} className="sr-only">
-      {label}
-    </label>
+    <svg
+      viewBox="0 0 24 24"
+      className="h-4 w-4 shrink-0 text-sea"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M12 21s-7-5.3-7-11a7 7 0 0 1 14 0c0 5.7-7 11-7 11z" />
+      <circle cx="12" cy="10" r="2.6" />
+    </svg>
   )
 }
