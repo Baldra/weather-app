@@ -20,6 +20,10 @@ export type WeatherCondition = {
 
 export type WeatherApiResponse = {
   name: string
+  coord: {
+    lat: number
+    lon: number
+  }
   sys: {
     country: string
   }
@@ -32,5 +36,33 @@ export type WeatherApiResponse = {
   wind: {
     speed: number
   }
+  timezone?: number
   dt: number
+}
+
+export type ForecastEntry = {
+  dt: number
+  main: {
+    temp: number
+    temp_min: number
+    temp_max: number
+  }
+  weather: WeatherCondition[]
+}
+
+export type ForecastApiResponse = {
+  city: {
+    name: string
+    country: string
+  }
+  list: ForecastEntry[]
+}
+
+export type ForecastDay = {
+  key: string
+  label: string
+  tempHigh: number
+  tempLow: number
+  icon: string
+  condition: string
 }

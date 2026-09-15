@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 
 import { fetchCountries } from '../services/countriesApi'
 import {
+  fetchForecast,
   fetchWeather,
   fetchWeatherByCoordinates,
   fetchWeatherByLocation,
@@ -10,7 +11,16 @@ import {
   searchCities,
   type GeocodedPlace,
 } from '../services/weatherApi'
-import type { Country, WeatherApiResponse } from '../types/weather'
+import type { Country, ForecastDay, WeatherApiResponse } from '../types/weather'
+import {
+  isFavourite,
+  loadFavourites,
+  removeFavourite,
+  saveFavourites,
+  toggleFavourite,
+  type FavouriteLocation,
+} from '../utils/favourites'
+import { groupForecastByDay } from '../utils/forecast'
 
 const REQUEST_DELAY_MS = 1200
 
@@ -53,6 +63,9 @@ export function useWeather() {
   const [weather, setWeather] = useState<WeatherApiResponse | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [favourites, setFavourites] = useState<FavouriteLocation[]>(() => loadFavourites())
+  const [forecast, setForecast] = useState<ForecastDay[]>([])
+  const [forecastError, setForecastError] = useState('')
   const lastRequestTimeRef = useRef(0)
   const skipCitySearchRef = useRef(false)
 
@@ -125,6 +138,10 @@ export function useWeather() {
     }
   }, [cityQuery, selectedCountryCode, searchMode])
 
+  useEffect(() => {
+    saveFavourites(favourites)
+  }, [favourites])
+
   const waitForRateLimit = async (): Promise<void> => {
     const elapsed = Date.now() - lastRequestTimeRef.current
 
@@ -137,12 +154,22 @@ export function useWeather() {
 
   const submitSearch = async (searchFn: () => Promise<WeatherApiResponse>): Promise<void> => {
     setError('')
+    setForecast([])
+    setForecastError('')
 
     try {
       setIsLoading(true)
       await waitForRateLimit()
       const result = await searchFn()
       setWeather(result)
+
+      try {
+        await waitForRateLimit()
+        const forecastResult = await fetchForecast(result.coord.lat, result.coord.lon)
+        setForecast(groupForecastByDay(forecastResult))
+      } catch {
+        setForecastError('Forecast is currently unavailable.')
+      }
     } catch (searchError) {
       const message =
         searchError instanceof Error
@@ -248,6 +275,36 @@ export function useWeather() {
     setIsSearchingCities(false)
   }
 
+  const favouriteLocation: FavouriteLocation | null =
+    weather?.coord != null
+      ? {
+          name: weather.name,
+          country: weather.sys.country,
+          lat: weather.coord.lat,
+          lon: weather.coord.lon,
+        }
+      : null
+
+  const isLocationFavourite =
+    favouriteLocation != null && isFavourite(favourites, favouriteLocation)
+
+  const handleToggleFavourite = (): void => {
+    if (favouriteLocation == null) {
+      return
+    }
+    setFavourites((current) => toggleFavourite(current, favouriteLocation))
+  }
+
+  const handleSelectFavourite = async (favourite: FavouriteLocation): Promise<void> => {
+    await submitSearch(() =>
+      fetchWeatherByCoordinates(favourite.lat, favourite.lon)
+    )
+  }
+
+  const handleRemoveFavourite = (favourite: FavouriteLocation): void => {
+    setFavourites((current) => removeFavourite(current, favourite))
+  }
+
   return {
     searchMode,
     handleModeChange,
@@ -268,5 +325,12 @@ export function useWeather() {
     error,
     handleSearch,
     handleUseMyLocation,
+    favourites,
+    isLocationFavourite,
+    handleToggleFavourite,
+    handleSelectFavourite,
+    handleRemoveFavourite,
+    forecast,
+    forecastError,
   }
 }

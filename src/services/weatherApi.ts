@@ -1,8 +1,9 @@
-import type { WeatherApiResponse } from '../types/weather'
+import type { ForecastApiResponse, WeatherApiResponse } from '../types/weather'
 
 const OPENWEATHER_API_KEY =
   import.meta.env.VITE_OPENWEATHER_API_KEY ?? 'YOUR_OPENWEATHER_API_KEY'
 const WEATHER_API_BASE_URL = 'https://api.openweathermap.org/data/2.5/weather'
+const FORECAST_API_BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast'
 const GEOCODING_API_BASE_URL = 'https://api.openweathermap.org/geo/1.0'
 
 export type GeocodedPlace = {
@@ -102,6 +103,16 @@ export async function fetchWeatherByCoordinates(
 
   const endpoint = `${WEATHER_API_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`
   return getWeather(endpoint)
+}
+
+export async function fetchForecast(
+  lat: number,
+  lon: number
+): Promise<ForecastApiResponse> {
+  assertApiKey()
+
+  const endpoint = `${FORECAST_API_BASE_URL}?lat=${lat}&lon=${lon}&appid=${OPENWEATHER_API_KEY}&units=metric`
+  return getJson<ForecastApiResponse>(endpoint)
 }
 
 export async function searchCities(

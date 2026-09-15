@@ -2,6 +2,15 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## API usage & local storage
+
+- Each successful search triggers up to **two OpenWeather API calls**: one for current
+  weather (`/data/2.5/weather`) and one for the 5-day forecast (`/data/2.5/forecast`).
+  Requests are rate-limited client-side to respect OpenWeather's free-tier limits.
+- Favourites are stored in `localStorage` under the key **`weather-app:favourites`**
+  (a JSON array of `{ name, country, lat, lon }`). They persist across reloads and are
+  cleared only when the browser storage is cleared.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
