@@ -130,13 +130,13 @@ function WeatherResult({
   forecast,
   forecastError,
 }: WeatherResultProps) {
+  const hasFavourites = favourites.length > 0
+
   if (isLoading) {
     return <LoadingSpinner />
   }
 
   if (weather) {
-    const hasFavourites = favourites.length > 0
-
     return (
       <div className="mt-5 grid gap-4 sm:mt-6 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:items-start">
         <div className={`min-w-0 ${hasFavourites ? 'lg:col-start-2' : 'lg:col-span-2'}`}>
@@ -170,8 +170,29 @@ function WeatherResult({
     )
   }
 
+  if (hasFavourites) {
+    return (
+      <div className="mt-5 grid gap-4 sm:mt-6 lg:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] lg:items-start">
+        <div className="min-w-0 lg:col-start-1">
+          <FavouritesBar
+            favourites={favourites}
+            onSelect={onSelectFavourite}
+            onRemove={onRemoveFavourite}
+          />
+        </div>
+        <div className="min-w-0">
+          <EmptyState />
+        </div>
+      </div>
+    )
+  }
+
+  return <EmptyState />
+}
+
+function EmptyState() {
   return (
-    <div className="mt-5 rounded-2xl border border-dashed border-haze bg-paper/70 px-6 py-10 text-center text-soft sm:mt-6 sm:py-14">
+    <div className="rounded-2xl border border-dashed border-haze bg-paper/70 px-6 py-10 text-center text-soft sm:py-14">
       Enter a city or ZIP code to see the current conditions and 5-day forecast.
     </div>
   )

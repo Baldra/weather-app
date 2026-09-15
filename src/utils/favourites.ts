@@ -1,10 +1,16 @@
 const FAVOURITES_KEY = 'weather-app:favourites'
+const COORD_PRECISION = 4
 
 export type FavouriteLocation = {
   name: string
   country: string
   lat: number
   lon: number
+}
+
+function roundCoord(value: number): number {
+  const factor = 10 ** COORD_PRECISION
+  return Math.round(value * factor) / factor
 }
 
 function isValidFavourite(value: unknown): value is FavouriteLocation {
@@ -21,7 +27,7 @@ function isValidFavourite(value: unknown): value is FavouriteLocation {
 }
 
 export function favouriteKey(favourite: FavouriteLocation): string {
-  return [favourite.name, favourite.country, favourite.lat, favourite.lon].join('|')
+  return `${roundCoord(favourite.lat)},${roundCoord(favourite.lon)}`
 }
 
 export function loadFavourites(): FavouriteLocation[] {
